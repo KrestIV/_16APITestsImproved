@@ -1,16 +1,25 @@
+package tests;
+
+import models.LoginCorrectBodyModel;
+import models.LoginIncorrectBodyModel;
+import models.ResponseLoginModel;
 import org.junit.jupiter.api.Test;
 
+import static io.qameta.allure.Allure.step;
 import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
-import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class LoginTests {
 
     @Test
     void successLoginTest() {
-        String authData = "{\"email\":\"eve.holt@reqres.in\",\"password\":\"cityslicka\"}";
+        LoginCorrectBodyModel authData = new LoginCorrectBodyModel();
 
-        given()
+        authData.setEmail("eve.holt@reqres.in");
+        authData.setPassword("cityslicka");
+
+        ResponseLoginModel response = step("Send request", ()-> given()
                 .body(authData)
                 .contentType(JSON)
                 .log().uri()
@@ -22,12 +31,18 @@ public class LoginTests {
                 .log().status()
                 .log().body()
                 .statusCode(200)
-                .body("token",is("QpwL5tke4Pnpja7X4"));
+                .extract().as(ResponseLoginModel.class));
+
+        step("Check result", () ->
+                assertEquals("QpwL5tke4Pnpja7X4",response.getToken()));
     }
 
     @Test
     void badBodyLoginTest() {
-        String authData = "{\"email\":\"eve.holt@reqres.in,\"password\":\"cityslicka\"}";
+        LoginIncorrectBodyModel authData = new LoginIncorrectBodyModel();
+
+        authData.setEmail("eve.holt@reqres.in");
+        authData.setPasword("cityslicka");
 
         given()
                 .body(authData)
