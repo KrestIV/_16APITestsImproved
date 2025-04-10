@@ -1,14 +1,16 @@
 package tests;
 
+import models.ErrorResponseLoginModel;
 import models.LoginCorrectBodyModel;
 import models.LoginIncorrectBodyModel;
 import models.ResponseLoginModel;
 import org.junit.jupiter.api.Test;
 
+//import static helpers.CustomAllureListener.withCustomTemplates;
 import static io.qameta.allure.Allure.step;
 import static io.restassured.RestAssured.given;
-import static io.restassured.http.ContentType.JSON;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static specs.LoginSpec.*;
 
 public class LoginTests {
 
@@ -19,18 +21,15 @@ public class LoginTests {
         authData.setEmail("eve.holt@reqres.in");
         authData.setPassword("cityslicka");
 
-        ResponseLoginModel response = step("Send request", ()-> given()
-                .body(authData)
-                .contentType(JSON)
-                .log().uri()
 
+        ResponseLoginModel response =
+                step("Send request", ()->
+                given(loginRequestSpec)
+                        .body(authData)
                 .when()
-                .post("https://reqres.in/api/login")
-
+                        .post()
                 .then()
-                .log().status()
-                .log().body()
-                .statusCode(200)
+                        .spec(loginResponseSpec)
                 .extract().as(ResponseLoginModel.class));
 
         step("Check result", () ->
@@ -44,18 +43,18 @@ public class LoginTests {
         authData.setEmail("eve.holt@reqres.in");
         authData.setPasword("cityslicka");
 
-        given()
-                .body(authData)
-                .contentType(JSON)
-                .log().uri()
+        ErrorResponseLoginModel response =
+                step("Send request", ()->
+                        given(loginRequestSpec)
+                                .body(authData)
+                        .when()
+                                .post()
+                        .then()
+                                .spec(badBodyLoginResponseSpec)
+                        .extract().as(ErrorResponseLoginModel.class));
 
-                .when()
-                .post("https://reqres.in/api/login")
-
-                .then()
-                .log().status()
-                .log().body()
-                .statusCode(400);
+        step("Check result", () ->
+               assertEquals("Missing password",response.getError()));
     }
 
 }
