@@ -1,23 +1,26 @@
 package tests;
 
+import models.UpdateUserResponseModel;
 import org.junit.jupiter.api.Test;
 
+import static io.qameta.allure.Allure.step;
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.hasKey;
+import static org.junit.jupiter.api.Assertions.*;
+import static specs.UpdateUserSpec.updateUserRequestSpec;
+import static specs.UpdateUserSpec.updateUserResponseSpec;
 
 public class UpdateUserTests {
 
 
     @Test
     public void successUpdateUserTest(){
-        given()
-                .log().uri()
+        UpdateUserResponseModel response = step("Send request", () -> given(updateUserRequestSpec)
                 .when()
-                .put("https://reqres.in/api/users/2")
+                .put()
                 .then()
-                .log().status()
-                .log().body()
-                .statusCode(200)
-                .body("",hasKey("updatedAt"));
+                .spec(updateUserResponseSpec)
+                .extract().as(UpdateUserResponseModel.class));
+
+        step("Check result", () -> assertNotNull(response.getUpdatedAt()) );
     }
 }
