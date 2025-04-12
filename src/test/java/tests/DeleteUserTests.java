@@ -3,18 +3,17 @@ package tests;
 import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.given;
+import static specs.DeleteUserSpec.deleteUserRequestSpec;
+import static specs.DeleteUserSpec.deleteUserResponseSpec;
 
 public class DeleteUserTests {
 
     @Test
     public void successDeleteUserTest(){
-        given()
-                .log().uri()
+        given(deleteUserRequestSpec)
                 .when()
-                .delete("https://reqres.in/api/users/2")
+                .delete()
                 .then()
-                .log().body()
-                .log().status()
-                .statusCode(204);
+                .spec(deleteUserResponseSpec);
     }
 }

@@ -6,7 +6,7 @@ import models.LoginIncorrectBodyModel;
 import models.ResponseLoginModel;
 import org.junit.jupiter.api.Test;
 
-//import static helpers.CustomAllureListener.withCustomTemplates;
+
 import static io.qameta.allure.Allure.step;
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertEquals;
