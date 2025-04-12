@@ -1,41 +1,44 @@
 package tests;
 
+import models.UserListResponseModel;
 import org.junit.jupiter.api.Test;
 
+import static io.qameta.allure.Allure.step;
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.hasKey;
-import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static specs.ListUserSpec.ListUserRequestSpec;
+import static specs.ListUserSpec.listUserResponseSpec;
 
 public class ListUserTests {
 
     @Test
     public void successListTest(){
-        String getParameters = "?page=1";
-        given()
-                .log().uri()
+        UserListResponseModel response = step("Send request",() -> given(ListUserRequestSpec)
                 .when()
-                .get("https://reqres.in/api/users" + getParameters)
+                .get()
                 .then()
-                .log().status()
-                .log().body()
-                .body("data.size()", is(6));
+                .spec(listUserResponseSpec)
+                .extract().as(UserListResponseModel.class));
+
+        step("Check size", () -> assertEquals(6, response.getData().length));
     }
 
     @Test
     public void checkItemStructureTest(){
-        String getParameters = "?page=1";
-        given()
-                .log().uri()
+        UserListResponseModel response = step("Send request", () -> given(ListUserRequestSpec)
                 .when()
-                .get("https://reqres.in/api/users" + getParameters)
+                .get()
                 .then()
-                .log().status()
-                .log().body()
-                .body("data[0]", hasKey("id"))
-                .body("data[0]", hasKey("email"))
-                .body("data[0]", hasKey("first_name"))
-                .body("data[0]", hasKey("last_name"))
-                .body("data[0]", hasKey("avatar"))
+                .spec(listUserResponseSpec)
+                .extract().as(UserListResponseModel.class));
+
+        step("Check response", () ->{
+            assertNotNull(response.getData()[0].getEmail());
+            assertNotNull(response.getData()[0].getFirst_name());
+            assertNotNull(response.getData()[0].getLast_name());
+            assertNotNull(response.getData()[0].getAvatar());
+        })
         ;
     }
 }
