@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import static io.qameta.allure.Allure.step;
 import static io.restassured.RestAssured.given;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static specs.UpdateUserSpec.updateUserRequestSpec;
 import static specs.UpdateUserSpec.updateUserResponseSpec;
 
@@ -21,6 +21,8 @@ public class UpdateUserTests extends TestBase {
                 .spec(updateUserResponseSpec)
                 .extract().as(UpdateUserResponseModel.class));
 
-        step("Check result", () -> assertNotNull(response.getUpdatedAt()) );
+        step("Check result", () ->
+                assertThat(response.getUpdatedAt())
+                        .containsPattern("[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}.[0-9]{3}Z"));
     }
 }
