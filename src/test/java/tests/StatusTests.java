@@ -12,7 +12,7 @@ public class StatusTests extends TestBase {
     void notFoundStatusTest() {
         given(statusRequestSpec)
                 .when()
-                .get("/usrs?page=1")
+                .get("/unknown/23")
                 .then()
                 .spec(statusResponseSpec);
     }
