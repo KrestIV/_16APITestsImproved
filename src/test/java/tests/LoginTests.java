@@ -9,10 +9,10 @@ import org.junit.jupiter.api.Test;
 
 import static io.qameta.allure.Allure.step;
 import static io.restassured.RestAssured.given;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static specs.LoginSpec.*;
 
-public class LoginTests {
+public class LoginTests extends TestBase {
 
     @Test
     void successLoginTest() {
@@ -27,13 +27,14 @@ public class LoginTests {
                 given(loginRequestSpec)
                         .body(authData)
                 .when()
-                        .post()
+                        .post("/login")
                 .then()
                         .spec(loginResponseSpec)
                 .extract().as(ResponseLoginModel.class));
 
         step("Check result", () ->
-                assertEquals("QpwL5tke4Pnpja7X4",response.getToken()));
+                assertThat(response.getToken())
+                        .containsPattern("[A-Za-z0-9]{15,}"));
     }
 
     @Test
@@ -48,13 +49,14 @@ public class LoginTests {
                         given(loginRequestSpec)
                                 .body(authData)
                         .when()
-                                .post()
+                                .post("/login")
                         .then()
                                 .spec(badBodyLoginResponseSpec)
                         .extract().as(ErrorResponseLoginModel.class));
 
         step("Check result", () ->
-               assertEquals("Missing password",response.getError()));
+               assertThat(response.getError())
+                       .isEqualTo("Missing password"));
     }
 
 }

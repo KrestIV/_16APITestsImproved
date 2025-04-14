@@ -6,13 +6,13 @@ import static io.restassured.RestAssured.given;
 import static specs.DeleteUserSpec.deleteUserRequestSpec;
 import static specs.DeleteUserSpec.deleteUserResponseSpec;
 
-public class DeleteUserTests {
+public class DeleteUserTests extends  TestBase{
 
     @Test
     public void successDeleteUserTest(){
         given(deleteUserRequestSpec)
                 .when()
-                .delete()
+                .delete("/users/2")
                 .then()
                 .spec(deleteUserResponseSpec);
     }

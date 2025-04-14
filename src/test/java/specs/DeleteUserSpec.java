@@ -11,14 +11,9 @@ import static io.restassured.filter.log.LogDetail.*;
 public class DeleteUserSpec {
     public static RequestSpecification deleteUserRequestSpec = with()
             .filter(withCustomTemplates())
-            .log().uri()
-            .log().body()
-            .log().headers()
-            .baseUri("https://reqres.in")
-            .basePath("/api/users/2");
+            .log().all();
     public static ResponseSpecification deleteUserResponseSpec = new ResponseSpecBuilder()
             .expectStatusCode(204)
-            .log(STATUS)
-            .log(BODY)
+            .log(ALL)
             .build();
 }

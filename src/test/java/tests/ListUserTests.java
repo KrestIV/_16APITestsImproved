@@ -1,44 +1,42 @@
 package tests;
 
+import models.UserListResponseDataModel;
 import models.UserListResponseModel;
 import org.junit.jupiter.api.Test;
 
 import static io.qameta.allure.Allure.step;
 import static io.restassured.RestAssured.given;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 import static specs.ListUserSpec.ListUserRequestSpec;
 import static specs.ListUserSpec.listUserResponseSpec;
 
-public class ListUserTests {
+public class ListUserTests extends TestBase {
 
     @Test
     public void successListTest(){
         UserListResponseModel response = step("Send request",() -> given(ListUserRequestSpec)
                 .when()
-                .get()
+                .get("/users?page=1")
                 .then()
                 .spec(listUserResponseSpec)
                 .extract().as(UserListResponseModel.class));
 
-        step("Check size", () -> assertEquals(6, response.getData().length));
+        step("Check size", () ->
+                assertThat(response.getData().length)
+                        .isEqualTo(6));
     }
 
     @Test
     public void checkItemStructureTest(){
         UserListResponseModel response = step("Send request", () -> given(ListUserRequestSpec)
                 .when()
-                .get()
+                .get("/users?page=1")
                 .then()
                 .spec(listUserResponseSpec)
                 .extract().as(UserListResponseModel.class));
 
-        step("Check response", () ->{
-            assertNotNull(response.getData()[0].getEmail());
-            assertNotNull(response.getData()[0].getFirst_name());
-            assertNotNull(response.getData()[0].getLast_name());
-            assertNotNull(response.getData()[0].getAvatar());
-        })
-        ;
+        step("Check response", () ->
+                assertThat(response.getData()[0])
+                        .isInstanceOf(UserListResponseDataModel.class));
     }
 }

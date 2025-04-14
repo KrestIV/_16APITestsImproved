@@ -6,21 +6,15 @@ import io.restassured.specification.ResponseSpecification;
 
 import static helpers.CustomAllureListener.withCustomTemplates;
 import static io.restassured.RestAssured.with;
-import static io.restassured.filter.log.LogDetail.BODY;
-import static io.restassured.filter.log.LogDetail.STATUS;
+import static io.restassured.filter.log.LogDetail.*;
 
 public class UpdateUserSpec {
     public static RequestSpecification updateUserRequestSpec = with()
             .filter(withCustomTemplates())
-            .log().uri()
-            .log().body()
-            .log().headers()
-            .baseUri("https://reqres.in")
-            .basePath("/api/users/2");
+            .log().all();
 
     public static ResponseSpecification updateUserResponseSpec = new ResponseSpecBuilder()
             .expectStatusCode(200)
-            .log(STATUS)
-            .log(BODY)
+            .log(ALL)
             .build();
 }
